@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>社会・受験対策クイズ</title>
+  <style>
+    :root { --ink:#1d2a44; --muted:#667085; --paper:#fffdf8; --line:#e7e0d3; --gold:#cf8b25; --navy:#183a63; --green:#247b61; --red:#b9464c; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#f4f0e8; font-family:"Hiragino Sans","Yu Gothic",system-ui,sans-serif; }
+    .wrap { width:min(920px, calc(100% - 32px)); margin:0 auto; }
+    header { background:linear-gradient(120deg,#142e51,#24578a); color:#fff; padding:32px 0 28px; box-shadow:0 3px 12px #17325233; }
+    .eyebrow { font-size:.78rem; letter-spacing:.12em; font-weight:700; opacity:.78; }
+    h1 { margin:7px 0 5px; font-size:clamp(1.55rem,4vw,2.25rem); }
+    .subtitle { margin:0; opacity:.9; }
+    main { padding:28px 0 46px; }
+    .panel { background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:28px; box-shadow:0 8px 26px #4c3c2010; }
+    .home-intro { margin:0 0 25px; line-height:1.8; color:#43516a; }
+    .modes { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    button { appearance:none; border:0; font:inherit; cursor:pointer; }
+    .mode { text-align:left; padding:22px; border:2px solid var(--line); border-radius:14px; background:#fff; color:var(--ink); transition:.15s; }
+    .mode:hover, .mode:focus-visible { border-color:var(--gold); transform:translateY(-2px); box-shadow:0 8px 16px #715a3522; outline:none; }
+    .mode strong { display:block; font-size:1.12rem; margin-bottom:7px; }.mode span { color:var(--muted); font-size:.9rem; line-height:1.55; }
+    .era-select { margin-top:22px; border-top:1px solid var(--line); padding-top:22px; }
+    .era-select h2 { font-size:1rem; margin:0 0 13px; }.era-buttons { display:flex; gap:9px; flex-wrap:wrap; }
+    .era { background:#eef3f7; color:#294b70; border:1px solid #d2dde8; border-radius:999px; padding:9px 13px; font-size:.88rem; }.era:hover,.era:focus-visible { background:#dceaf5; outline:2px solid var(--gold); outline-offset:2px; }
+    #quiz { display:none; }.topline { display:flex; justify-content:space-between; align-items:center; gap:12px; color:var(--muted); font-weight:700; font-size:.9rem; }.badge { padding:5px 10px; border-radius:999px; background:#f9e7bd; color:#76520d; }
+    .progress { height:7px; background:#e7e2d9; border-radius:99px; margin:17px 0 26px; overflow:hidden; }.progress div { height:100%; background:var(--gold); transition:width .3s; }
+    .question-era { color:#936719; font-weight:800; font-size:.85rem; letter-spacing:.06em; }.question { font-size:clamp(1.1rem,2.8vw,1.42rem); line-height:1.7; margin:10px 0 23px; font-weight:700; }
+    .choices { display:grid; gap:10px; }.choice { text-align:left; border:1px solid #d9dfe7; background:#fff; border-radius:11px; padding:14px 15px; color:var(--ink); line-height:1.5; }.choice:hover:not(:disabled) { background:#f2f7fb; border-color:#7f9ec1; }.choice:disabled { cursor:default; }.choice.correct { background:#e4f4eb; border-color:var(--green); color:#145943; }.choice.wrong { background:#fbe8e8; border-color:var(--red); color:#8f3036; }
+    .feedback { display:none; margin-top:19px; padding:16px; background:#f8f5ed; border-radius:10px; line-height:1.7; }.feedback.show { display:block; }.feedback b { display:block; margin-bottom:3px; }.next { display:none; margin:18px 0 0 auto; background:var(--navy); color:#fff; border-radius:9px; padding:11px 18px; font-weight:700; }.next.show { display:block; }.next:hover { background:#245282; }
+    #result { display:none; text-align:center; }.score { font-size:clamp(2.8rem,10vw,5rem); color:var(--gold); font-weight:800; line-height:1; margin:20px 0 9px; }.result-text { color:var(--muted); line-height:1.7; }.actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:24px; }.action { padding:11px 17px; border-radius:9px; background:var(--navy); color:#fff; font-weight:700; }.action.sub { background:#e8edf2; color:var(--ink); }
+    @media(max-width:580px){ .panel{padding:20px 17px}.modes{grid-template-columns:1fr} header{padding:25px 0 23px} }
+    .daily-card{margin:0 0 20px;padding:14px 16px;border-radius:12px;background:#edf4fa;color:#294b70;display:flex;gap:12px;align-items:center;justify-content:space-between;font-size:.92rem}.daily-card b{font-size:1.05rem}.setting-title{font-weight:800;margin:23px 0 10px}.difficulty{display:flex;gap:8px;flex-wrap:wrap}.level{padding:9px 13px;border-radius:99px;background:#fff;border:1px solid #ccd7e1;color:#365573;font-size:.88rem}.level.selected{background:#183a63;color:#fff;border-color:#183a63}.question-kind{margin-left:7px;font-size:.75rem;background:#e7eef5;color:#42607d;padding:4px 7px;border-radius:99px}.answer-box{display:flex;gap:9px;align-items:stretch}.answer-input{min-width:0;flex:1;border:2px solid #cbd8e3;border-radius:10px;padding:13px;font:inherit;font-size:1rem}.answer-input:focus{outline:2px solid #cf8b25;outline-offset:1px}.submit-answer{background:#183a63;color:#fff;border-radius:10px;padding:0 17px;font-weight:700}.map-card{margin:0 0 18px;border:1px solid #d4dfe8;background:#f8fbfd;border-radius:12px;padding:8px}.map-card svg{width:100%;height:auto;max-height:200px;display:block}.map-label{font-size:13px;font-weight:800;fill:#183a63}.map-dot{fill:#cf8b25;stroke:#fff;stroke-width:2}.review{display:none;margin-top:22px;text-align:left;border-top:1px solid var(--line);padding-top:18px}.review.show{display:block}.review h3{margin:0 0 9px;font-size:1rem}.review ul{margin:0;padding-left:1.2em;color:#56657a;line-height:1.8}.mini{font-size:.82rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header><div class="wrap"><div class="eyebrow">SOCIAL STUDIES · JAPANESE HISTORY</div><h1>社会・受験対策クイズ</h1><p class="subtitle">日本の歴史を中心に、小6範囲から私立中学受験レベルの「考える社会」へ。</p></div></header>
+  <main class="wrap">
+    <section id="home" class="panel">
+      <p class="home-intro">1回10問。すべて四択で、答えた直後に要点解説を確認できます。まずは全時代から出題する「総合」、または時代を絞る「時代別」を選んでください。</p>
+      <div class="modes"><button class="mode" id="allMode"><strong>総合ランダム 10問</strong><span>旧石器〜現代から、毎回ランダムに10問出題。</span></button><button class="mode" id="eraMode"><strong>時代別・重要問題 10問</strong><span>選んだ時代の頻出・重要テーマを集中的に演習。</span></button></div>
+      <div class="era-select" id="eraSelect" hidden><h2>出題する時代を選択</h2><div class="era-buttons" id="eraButtons"></div></div>
+    </section>
+    <section id="quiz" class="panel"><div class="topline"><span id="counter">第 1 問 / 10</span><span class="badge" id="modeLabel"></span></div><div class="progress"><div id="bar"></div></div><div class="question-era" id="qEra"></div><div class="question" id="qText"></div><div class="choices" id="choices"></div><div class="feedback" id="feedback"></div><button class="next" id="next">次の問題へ</button></section>
+    <section id="result" class="panel"><div class="eyebrow" style="color:#76520d">RESULT</div><h2>10問、おつかれさまでした！</h2><div class="score" id="score"></div><p class="result-text" id="resultText"></p><div class="actions"><button class="action" id="retry">同じ条件でもう一度</button><button class="action sub" id="back">モードを選び直す</button></div></section>
+  </main>
+  <script>
+    const questions = [
+      ['旧石器・縄文','岩宿遺跡の発見が、日本の歴史研究に大きな影響を与えた理由として最も適切なのはどれですか。',['日本にも稲作が古くからあったと分かった','日本列島に土器以前の人々がいたことが分かった','大陸から渡来人が来た時期が分かった','邪馬台国の場所が分かった'],1,'打製石器が出土し、日本列島にも土器を使う以前の旧石器時代があったことが明らかになりました。'],
+      ['旧石器・縄文','縄文土器の特徴として、弥生土器と比べて最も適切なのはどれですか。',['薄手で高温焼成され、赤褐色である','表面に縄目の文様があり、煮炊きに適した深い形が多い','鉄器で作られ、農具に使われた','青銅器とセットで祭りに使われた'],1,'縄文土器は縄目文様が特色で、狩猟・採集・漁労生活の煮炊きに使われました。'],
+      ['弥生・古墳','弥生時代に米づくりが広がったことで、社会に起きた変化として最も適切なのはどれですか。',['争いがなくなり、身分差も消えた','食料を蓄えられるようになり、むらの間に争いが起きた','狩りだけで生活する人が増えた','文字を使う人が急に増えた'],1,'米を蓄えることで貧富や力の差が生まれ、水田や収穫物をめぐる争いも起こりました。'],
+      ['弥生・古墳','次のうち、古墳時代の大王を中心とする政治について述べたものとして正しいのはどれですか。',['大王は「天皇」とよばれ、全国を直接支配していた','豪族は大王に仕え、各地を支配しながら連合をつくった','中国の皇帝が日本の各地に役人を送った','農民の選挙で大王を選んだ'],1,'大王（後の天皇）を中心に、強い豪族が結びつくヤマト政権が成立しました。'],
+      ['飛鳥','冠位十二階と十七条の憲法を定めた人物はだれですか。',['聖徳太子','中大兄皇子','天武天皇','藤原道長'],0,'聖徳太子は豪族どうしの争いをおさえ、能力を重んじた役人の仕組みをめざしました。'],
+      ['飛鳥','遣隋使を送った目的として最も適切なのはどれですか。',['隋の軍隊に日本を守ってもらうため','中国の進んだ制度や文化を学ぶため','日本の米を隋に売るため','仏教を禁止してもらうため'],1,'当時の中国（隋・唐）は東アジアの大国で、日本は制度・学問・仏教文化を積極的に学びました。'],
+      ['奈良','墾田永年私財法が出された後に起きたこととして正しいのはどれですか。',['新しく開いた田を有力者や寺院が私有するようになった','すべての田が国のものになった','班田収授法がより確実に行われた','農民が税を納めなくてよくなった'],0,'開墾した田の永久私有を認めたため、荘園が増え、公地公民制がくずれていきました。'],
+      ['奈良','聖武天皇が国ごとに国分寺・国分尼寺を建て、奈良に東大寺を建てた主なねらいは何ですか。',['貴族の土地を増やすため','仏教の力で国を守り、社会の不安をしずめるため','中国に勝つための軍隊を作るため','地方の豪族を独立させるため'],1,'疫病や反乱などの不安が続くなか、仏教を用いて国家を守ろうとする鎮護国家の考えが強まりました。'],
+      ['平安','藤原氏が摂関政治で力を持った方法として最も適切なのはどれですか。',['武士を集めて天皇を倒した','娘を天皇のきさきにし、幼い天皇を補佐した','遣唐使の船を独占した','全国の寺を支配した'],1,'藤原氏は外戚となり、摂政・関白として天皇に代わり政治を行いました。'],
+      ['平安','国風文化が発達した背景として最も適切なのはどれですか。',['遣唐使を廃止し、日本の風土に合った文化が育った','ヨーロッパの文化が大量に伝わった','鎌倉幕府が文化を保護した','鉄砲が伝来した'],0,'遣唐使廃止後、中国文化をもとにしながら、かな文字や寝殿造など日本らしい文化が発展しました。'],
+      ['平安','平将門の乱と藤原純友の乱が示す社会の変化として適切なのはどれですか。',['地方で武士が力をつけ始めた','貴族が地方で軍事力を失ったので農民が政治を始めた','天皇が地方の税をなくした','蒙古が日本を攻めた'],0,'地方の治安維持に武力が必要となり、武士がしだいに力をのばしました。'],
+      ['鎌倉','源頼朝が全国に守護・地頭を置いた目的として最も適切なのはどれですか。',['朝廷の役人を海外に派遣するため','御家人を通じて各地を支配し、軍事・土地管理を行うため','寺社だけに土地を与えるため','農民から年貢をなくすため'],1,'守護は国ごとの軍事・警察、地頭は荘園や公領の土地管理・年貢徴収を担いました。'],
+      ['鎌倉','承久の乱の後、鎌倉幕府が京都に置いた役所はどれですか。',['鎮西探題','六波羅探題','問注所','政所'],1,'朝廷を監視し、西国支配を強めるために六波羅探題が置かれました。'],
+      ['鎌倉','元寇後、鎌倉幕府が弱まった理由として最も重要なのはどれですか。',['戦いが国内の領地争いではなく、新しい恩賞地を十分に与えられなかった','武士が全員モンゴルへ移住した','天皇が米作りを禁止した','宋から大量の金が届いた'],0,'外国の侵攻を退けても領土が増えず、御家人への十分な恩賞が出せなかったことが不満につながりました。'],
+      ['室町','足利義満が明と行った貿易は何とよばれますか。',['南蛮貿易','日宋貿易','勘合貿易','朱印船貿易'],2,'正式な船であることを示す勘合（札）を用いたため、勘合貿易とよばれます。'],
+      ['室町','応仁の乱が長期化した結果として最も適切なのはどれですか。',['京都が荒廃し、各地で戦国大名が力をのばした','鎌倉幕府が成立した','江戸に幕府が移った','全国がすぐに統一された'],0,'将軍や守護大名の力が弱まり、各地の実力者である戦国大名が台頭しました。'],
+      ['室町','室町時代に自治的な村で、農民たちが寄り合いによって決めたきまりを何といいますか。',['御成敗式目','惣掟','武家諸法度','五榜の掲示'],1,'惣村では寄り合いを開き、惣掟を定めるなど、農民の自治が発達しました。'],
+      ['安土桃山','織田信長が楽市・楽座を行ったねらいとして最も適切なのはどれですか。',['商業を活発にし、座の特権を弱めるため','農民を全員武士にするため','キリスト教だけを広めるため','明との貿易を禁止するため'],0,'市場税を免除し、座の独占を弱めて商業を発達させようとしました。'],
+      ['安土桃山','豊臣秀吉の太閤検地と刀狩が果たした役割として最も適切なのはどれですか。',['兵農分離を進め、農民から年貢を安定して取るしくみを整えた','武士を農民に戻した','大名の領地をすべて寺に与えた','海外の植民地を増やした'],0,'田畑の面積と収穫量を調べ、農民から武器を取り上げることで、武士と農民の区別を明確にしました。'],
+      ['江戸前期','江戸幕府が参勤交代を制度化した主な目的は何ですか。',['大名の力を弱め、幕府への忠誠を確かめるため','大名に海外留学をさせるため','農民の税をなくすため','朝廷に政治を返すため'],0,'大名に江戸と領地を往復させ、多くの費用を負担させることで、幕府が大名を統制しました。'],
+      ['江戸前期','鎖国中もオランダ・中国との貿易が許されていた場所はどこですか。',['堺','長崎','江戸','平戸だけ'],1,'長崎の出島でオランダと、中国人が住む唐人屋敷などを通じて中国と貿易しました。'],
+      ['江戸中期','新田開発や商品作物の栽培が広がったことによる変化として適切なのはどれですか。',['農村でも貨幣を使う機会が増え、貧富の差が広がった','米が不要になった','大名がいなくなった','仏教が禁止された'],0,'綿・菜種などの商品作物や現金収入が広がる一方、農民の階層分化が進みました。'],
+      ['江戸中期','田沼意次の政治の特徴として最も適切なのはどれですか。',['株仲間を認め、商人から税を取って財政を立て直そうとした','質素・倹約だけを徹底した','外国船を打ち払う命令を出した','廃藩置県を行った'],0,'商業を利用して収入を増やそうとしましたが、わいろやききんへの対応で批判も受けました。'],
+      ['江戸後期','寛政の改革・天保の改革に共通する内容として最も適切なのはどれですか。',['ぜいたくを戒め、幕府財政と農村を立て直そうとした','外国との自由貿易を進めた','身分制度をすべて廃止した','全国に鉄道を建設した'],0,'松平定信・水野忠邦は、倹約や農村復興を重視する改革を進めました。'],
+      ['幕末・明治','ペリー来航後に結ばれた日米修好通商条約が不平等とされた理由として正しい組み合わせはどれですか。',['領事裁判権を認め、関税自主権がなかった','日本がアメリカを支配した','日本だけが関税を決められた','外国人の来日を禁じた'],0,'外国人を日本の法律で裁けない領事裁判権と、日本が関税を自由に決められないことが問題でした。'],
+      ['幕末・明治','版籍奉還と廃藩置県のねらいとして最も適切なのはどれですか。',['藩主が持っていた土地と人民の支配を中央政府に集めるため','武士を増やすため','鎖国を復活させるため','江戸幕府を再建するため'],0,'明治政府は全国を統一的に治めるため、藩をなくして府県を置きました。'],
+      ['幕末・明治','自由民権運動が求めたものとして最も適切なのはどれですか。',['国会を開き、国民の代表が政治に参加すること','将軍を復活させること','外国との貿易をやめること','身分制度を強化すること'],0,'板垣退助らを中心に、国会開設と憲法制定を求める運動が広がりました。'],
+      ['明治・大正','日清戦争後、日本が清から得たものとして正しいのはどれですか。',['台湾','朝鮮半島全体','樺太の南半分','沖縄'],0,'下関条約で日本は台湾などを得ました。遼東半島は三国干渉によって清に返還しました。'],
+      ['明治・大正','第一次世界大戦後の社会の変化として最も適切なのはどれですか。',['都市化が進み、普通選挙を求める動きが強まった','幕藩体制が復活した','鎖国が始まった','米が貨幣として使われなくなった'],0,'工業化・都市化とともに大正デモクラシーが広がり、1925年には普通選挙法が成立しました。'],
+      ['昭和戦前','1931年の満州事変後、日本の国際的な立場として最も適切なのはどれですか。',['国際連盟を脱退し、国際社会から孤立を深めた','国際連盟の中心国になった','すぐに第二次世界大戦が終わった','アメリカの州になった'],0,'満州国を承認しない国際連盟の勧告に反発し、日本は1933年に国際連盟を脱退しました。'],
+      ['昭和戦後','日本国憲法の三大原則の組み合わせとして正しいのはどれですか。',['国民主権・基本的人権の尊重・平和主義','天皇主権・徴兵制・鎖国','武士道・仏教・農本主義','地方分権・参勤交代・富国強兵'],0,'1947年施行の日本国憲法は、国民主権、基本的人権の尊重、平和主義を基本原則とします。'],
+      ['昭和戦後','高度経済成長期に起きた問題と、その対策の組み合わせとして適切なのはどれですか。',['公害の深刻化 ― 環境保全のための法整備が進んだ','米不足 ― 鎖国を行った','人口減少 ― 徴兵制を復活した','戦争被害 ― 江戸幕府を復活した'],0,'工場排水や大気汚染などの公害が深刻化し、公害対策基本法などの整備が進められました。'],
+      ['現代','地方自治の考え方として最も適切なのはどれですか。',['地域のことを地域の住民の意思を反映して決める','都道府県知事を国会が任命する','地方議会をなくす','国だけがすべての税を使う'],0,'地方公共団体では首長・議員を住民が選び、地域の課題に取り組みます。'],
+      ['飛鳥','大化の改新で目指された政治のしくみとして最も適切なのはどれですか。',['豪族が土地と人民を私有する仕組みを強める','天皇を中心に土地と人民を国家が管理する仕組み','武士が将軍を選ぶ仕組み','地方ごとに独立国を作る仕組み'],1,'蘇我氏を倒した後、中大兄皇子らは公地公民制をめざし、天皇中心の国家づくりを進めました。'],
+      ['奈良','正倉院の宝物から分かる奈良時代の文化の特色として最も適切なのはどれですか。',['シルクロードを通じた西アジアなどの文化の影響','ヨーロッパの産業革命の影響','アメリカ先住民文化の影響','江戸の町人文化の影響'],0,'正倉院の宝物には、唐を経由して伝わった西アジア・インドなどの文化の影響が見られます。'],
+      ['江戸前期','江戸幕府の身分制度で、農民が負担した年貢の中心は何でしたか。',['米','金','絹','鉄'],0,'幕府・藩の収入の中心は米で、農民は米を年貢として納めました。'],
+      ['江戸前期','生類憐れみの令を出した将軍はだれですか。',['徳川綱吉','徳川吉宗','徳川家光','徳川慶喜'],0,'徳川綱吉の時代には、動物を保護する生類憐れみの令が出され、のちに廃止されました。'],
+      ['江戸中期','徳川吉宗が行った享保の改革で、目安箱を置いた目的として最も適切なのはどれですか。',['庶民の意見を政治に取り入れるため','大名の参勤交代をなくすため','外国船を招くため','農民に武器を配るため'],0,'将軍に直接意見を届ける目安箱を置き、町火消や小石川養生所などの政策につなげました。'],
+      ['江戸中期','国学を大成し、『古事記伝』を書いた人物はだれですか。',['本居宣長','杉田玄白','伊能忠敬','平賀源内'],0,'本居宣長は日本の古典を研究して国学を大成しました。'],
+      ['江戸後期','杉田玄白らがオランダ語の解剖書を翻訳して出版した本はどれですか。',['解体新書','蘭学事始','日本永代蔵','東海道中膝栗毛'],0,'『解体新書』は西洋医学の知識を伝え、蘭学の発展を示す代表的な書物です。'],
+      ['江戸後期','伊能忠敬の功績として正しいものはどれですか。',['全国を測量し、精密な日本地図を作った','蝦夷地をロシアに売った','全国に寺子屋を作った','最初の鉄道を開通させた'],0,'伊能忠敬は全国を歩いて測量し、正確な日本地図を完成させました。'],
+      ['昭和戦後','サンフランシスコ平和条約によって日本が回復したものは何ですか。',['独立','鎖国','武家政治','徴兵制'],0,'1951年に調印、1952年に発効したこの条約で、日本は主権を回復して独立しました。'],
+      ['現代','日本が国際連合に加盟した年はいつですか。',['1945年','1956年','1964年','1972年'],1,'日本は1956年に国際連合へ加盟し、国際社会への復帰を進めました。']
+    ];
+    const eraGroups={ '古代（旧石器〜奈良）':['旧石器・縄文','弥生・古墳','飛鳥','奈良'], '中世（平安〜戦国）':['平安','鎌倉','室町','安土桃山'], '近世（江戸）':['江戸前期','江戸中期','江戸後期'], '近代・現代（幕末〜現在）':['幕末・明治','明治・大正','昭和戦前','昭和戦後','現代'] };
+    const eras=Object.keys(eraGroups); let active=[], index=0, score=0, config={};
+    const $=id=>document.getElementById(id), shuffle=a=>[...a].sort(()=>Math.random()-.5);
+    eras.forEach(era=>{const b=document.createElement('button');b.className='era';b.textContent=era;b.onclick=()=>start('era',era);$('eraButtons').append(b)});
+    $('allMode').onclick=()=>start('all'); $('eraMode').onclick=()=>$('eraSelect').hidden=!$('eraSelect').hidden;
+    function start(type,era){ config={type,era}; const pool=type==='all'?questions:questions.filter(q=>eraGroups[era].includes(q[0])); active=shuffle(pool).slice(0,10); index=0;score=0;$('home').style.display='none';$('result').style.display='none';$('quiz').style.display='block';$('modeLabel').textContent=type==='all'?'総合ランダム':era+'・重要問題';render(); }
+    function render(){const q=active[index];$('counter').textContent=`第 ${index+1} 問 / 10`;$('bar').style.width=`${index*10}%`;$('qEra').textContent=q[0];$('qText').textContent=q[1];$('feedback').className='feedback';$('next').className='next';$('choices').innerHTML='';shuffle(q[2].map((text,i)=>({text,i}))).forEach(c=>{const b=document.createElement('button');b.className='choice';b.textContent=c.text;b.onclick=()=>answer(c.i,b);$('choices').append(b)});}
+    function answer(selected,btn){const q=active[index], buttons=[...document.querySelectorAll('.choice')];buttons.forEach(b=>b.disabled=true);if(selected===q[3]){btn.classList.add('correct');score++;$('feedback').innerHTML='<b>正解！</b>'+q[4]}else{btn.classList.add('wrong');buttons.find(b=>b.textContent===q[2][q[3]]).classList.add('correct');$('feedback').innerHTML='<b>不正解</b> 正解は「'+q[2][q[3]]+'」。<br>'+q[4]}$('feedback').classList.add('show');$('next').textContent=index===9?'結果を見る':'次の問題へ';$('next').classList.add('show');}
+    $('next').onclick=()=>{index++;if(index<10)render();else showResult()};
+    function showResult(){$('quiz').style.display='none';$('result').style.display='block';$('score').textContent=`${score} / 10`;let msg=score>=9?'すばらしい！ 資料や流れを問う問題にも挑戦してみましょう。':score>=7?'よくできました。解説を読み返して、出来事どうしのつながりも押さえましょう。':score>=5?'基礎は育っています。間違えた問題の時代背景を解説で確認しましょう。':'まずは解説を味方に。人物・制度・できごとの「なぜ」を意識して復習しましょう。';$('resultText').textContent=msg;}
+    $('retry').onclick=()=>start(config.type,config.era);$('back').onclick=()=>{$('result').style.display='none';$('quiz').style.display='none';$('home').style.display='block'};
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
