@@ -171,33 +171,52 @@
     const candidates=facts.filter(y=>y.era===x.era&&y.answer!==x.answer).map(y=>y.answer);
     return [{...x,level:3,type:'fill',kind:'一問一答'}, {...x,level:2,type:'choice',kind:'四択・類題',options:shuffle([x.answer,...shuffle(candidates.length>=3?candidates:facts.map(y=>y.answer).filter(a=>a!==x.answer)).slice(0,3)])}];
   });
-  const places = `弥生・古墳|吉野ヶ里遺跡|佐賀県|環濠集落の代表|590,130
-飛鳥|飛鳥地方|奈良県|飛鳥文化・大化の改新の舞台|490,185
-奈良|平城京|奈良県|奈良時代の都|490,165
-平安|平安京|京都府|794年に都が置かれた|475,143
-鎌倉|鎌倉|神奈川県|鎌倉幕府の所在地|520,260
-室町|京都|京都府|室町幕府の所在地|478,142
-安土桃山|安土|滋賀県|織田信長が城を築いた|490,132
-江戸前期|江戸|東京都|江戸幕府の所在地|535,285
-江戸前期|長崎|長崎県|鎖国中の貿易港|340,370
-江戸後期|蝦夷地|北海道|松前藩・アイヌとの交易|650,60
-幕末・明治|浦賀|神奈川県|ペリーが来航した港|520,270
-幕末・明治|函館|北海道|開港場の一つ|650,70
-幕末・明治|横浜|神奈川県|日米修好通商条約後の開港場|518,278
-明治・大正|下関|山口県|日清講和条約が結ばれた|395,335
-明治・大正|旅順|中国東北部|日露戦争の激戦地|660,170
-昭和戦後|広島|広島県|原子爆弾が投下された都市|405,310
-昭和戦後|長崎|長崎県|原子爆弾が投下された都市|340,370
-現代|沖縄|沖縄県|1972年に本土復帰|250,470
-現代|東京|東京都|1964年五輪・日本の首都|535,285
-現代|大阪|大阪府|1970年に万国博覧会が開かれた|470,225`.split('\n').map(x=>{const [era,place,answer,explain,pos]=x.split('|');return{era,place,answer,explain,pos}});
-  const mapBank=places.flatMap(x=>[{...x,level:2,type:'choice',kind:'白地図',text:'白地図の★が示す場所はどこですか。',options:shuffle([x.answer,...shuffle(places.filter(y=>y.answer!==x.answer).map(y=>y.answer)).slice(0,3)])},{...x,level:3,type:'fill',kind:'白地図・穴埋め',text:'白地図の★が示す場所を、都道府県名または地名で答えなさい。',aliases:[x.place]}]);
+  // 白地図は「県を答えさせるのに、県の位置が分からない図」にならないよう、
+  // 実際の日本列島の向き・島の位置関係に合わせた座標を使う。
+  const places = `弥生・古墳|吉野ヶ里遺跡|佐賀県|九州の北西部にある環濠集落の代表|145,300
+飛鳥|飛鳥地方|奈良県|近畿地方の内陸部。飛鳥文化・大化の改新の舞台|405,242
+奈良|平城京|奈良県|近畿地方の内陸部。奈良時代の都|405,242
+平安|平安京|京都府|近畿地方の北寄り。794年に都が置かれた|387,220
+鎌倉|鎌倉|神奈川県|関東地方の南西部、東京の南西にある|507,252
+室町|京都|京都府|近畿地方の北寄り。室町幕府の所在地|387,220
+安土桃山|安土|滋賀県|琵琶湖の東側、近畿地方にある|414,218
+江戸前期|江戸|東京都|関東地方の南部、東京湾の西側|520,232
+江戸前期|長崎|長崎県|九州の最も西寄りにある貿易港|112,315
+江戸後期|蝦夷地|北海道|日本列島の最も北にある大きな島|552,74
+幕末・明治|浦賀|神奈川県|三浦半島の東側、東京湾の入口にある|510,258
+幕末・明治|函館|北海道|北海道の南西部にある開港場|520,101
+幕末・明治|横浜|神奈川県|東京湾の西側にある開港場|507,245
+明治・大正|下関|山口県|本州の西の端、九州との間の海峡に面する|260,270
+明治・大正|旅順|中国東北部|中国東北部の遼東半島にある日露戦争の激戦地|98,145|asia
+昭和戦後|広島|広島県|中国地方の西部、瀬戸内海に面する|300,258
+昭和戦後|長崎|長崎県|九州の最も西寄りにある|112,315
+現代|沖縄|沖縄県|九州の南西に連なる島々にある|94,388
+現代|東京|東京都|関東地方の南部、東京湾の西側|520,232
+現代|大阪|大阪府|近畿地方の西部、大阪湾に面する|382,250`.split('\n').map(x=>{const [era,place,answer,explain,pos,scope]=x.split('|');return{era,place,answer,explain,pos,scope}});
+  const mapBank=places.flatMap(x=>[{...x,level:2,type:'choice',kind:'白地図',text:'白地図の★が示す場所がある都道府県・地域はどこですか。',options:shuffle([x.answer,...shuffle(places.filter(y=>y.answer!==x.answer).map(y=>y.answer)).slice(0,3)])},{...x,level:3,type:'fill',kind:'白地図・穴埋め',text:'白地図の★が示す場所を、都道府県名または地名で答えなさい。',aliases:[x.place]}]);
   const bank=[...base,...direct,...time,...factBank,...mapBank];
   let active=[], index=0, score=0, miss=[], setting={level:2,mode:'all',era:null};
   const day=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo'}).format(new Date());
   const getLogs=()=>JSON.parse(localStorage.getItem('jhistory-morning-log')||'{}');
   function record(){const all=getLogs(), d=day(), v=all[d]||{sets:0,correct:0,total:0};v.sets++;v.correct+=score;v.total+=10;all[d]=v;localStorage.setItem('jhistory-morning-log',JSON.stringify(all));}
-  function mapSVG(q){if(!q.pos)return '';const [x,y]=q.pos.split(',');return `<div class="map-card"><svg viewBox="180 25 560 485" aria-label="日本の白地図"><path d="M630 42l36 13 30 30-13 18-36-8-27 19-30-8-22 14-20-11-22 17-16-13-28 18-19-8-21 27-24 6-17 27-30 8-15 25-36 9-19 28-37 9-20 34 27 19 35-9 21 21 30-4 16 17 25-9 14 25 29-3 17 23 32-6 20 19 29-15 30 5 12-28 23-11 0-29 17-21-12-29 20-22-8-33 17-24-15-25 14-25-14-26 16-22-16-21 11-23-16-19 13-24-16-16 9-25-15-16z" fill="#e8eef3" stroke="#8ca3b5" stroke-width="3"/><path d="M277 430l20 11 21 20-15 18-32-10-14-21z" fill="#e8eef3" stroke="#8ca3b5" stroke-width="3"/><circle class="map-dot" cx="${x}" cy="${y}" r="10"/></svg><div class="mini">★が示す場所を答えよう</div></div>`}
+  function mapSVG(q){if(!q.pos)return '';const [x,y]=q.pos.split(',');const asia=q.scope==='asia';const japan=`
+    <g fill="#edf2f6" stroke="#72889a" stroke-width="2.4" stroke-linejoin="round">
+      <!-- 北海道・本州・四国・九州・沖縄を別々に描き、島の位置関係を学べる形にする -->
+      <path d="M503 58 L531 34 575 43 604 66 594 91 565 100 550 119 524 108 514 88 493 79Z"/>
+      <path d="M475 112 L493 126 484 145 495 164 486 184 500 203 493 221 511 237 501 253 478 257 459 245 443 249 427 236 408 238 393 251 370 247 354 260 335 252 315 264 292 258 275 270 257 261 245 273 226 267 215 254 231 240 248 235 263 220 282 214 297 199 318 192 330 177 350 170 361 154 382 149 392 134 414 129 428 115 449 119 461 106Z"/>
+      <path d="M351 276 L372 283 384 300 369 312 348 304 338 289Z"/>
+      <path d="M207 264 L232 271 246 289 234 307 215 313 199 300 187 286Z"/>
+      <path d="M132 370 L143 376 151 383 158 390 149 397 138 392 128 386Z"/>
+      <path d="M110 402 L116 405 121 410 115 415 108 412Z"/><path d="M91 423 L97 426 101 431 95 435 88 431Z"/>
+    </g>
+    <g stroke="#b8c5d0" stroke-width="1.25" fill="none" opacity=".95">
+      <!-- 地方の区切りの目安。県名は書かず、白地図として位置を考える -->
+      <path d="M461 106 L475 112 M428 115 L435 138 M392 134 L403 155 M361 154 L373 175 M330 177 L342 198 M297 199 L309 219 M263 220 L276 241 M231 240 L246 259"/>
+      <path d="M408 238 L420 220 M370 247 L381 227 M315 264 L324 243 M275 270 L287 250"/>
+    </g>
+    <g class="map-label"><text x="538" y="27">北海道</text><text x="461" y="151">東北</text><text x="491" y="218">関東</text><text x="393" y="198">中部</text><text x="370" y="272">近畿</text><text x="282" y="247">中国</text><text x="343" y="330">四国</text><text x="163" y="340">九州</text><text x="56" y="407">沖縄</text></g>`;
+    const asiaMap=`<g fill="#edf2f6" stroke="#72889a" stroke-width="2.4" stroke-linejoin="round"><path d="M30 42 L176 35 211 77 180 125 194 180 146 215 65 188 35 135Z"/><path d="M236 52 L274 65 284 120 268 163 248 136 240 94Z"/></g><path d="M171 104 L188 119 180 144" fill="none" stroke="#72889a" stroke-width="2"/><text class="map-label" x="70" y="30">中国東北部</text><text class="map-label" x="238" y="42">朝鮮半島</text><text class="map-label" x="324" y="79">日本</text>`;
+    return `<div class="map-card"><svg viewBox="0 0 700 450" role="img" aria-label="${asia?'東アジアと日本の位置関係':'地方の位置関係が分かる日本の白地図'}"><rect x="8" y="8" width="684" height="434" rx="16" fill="#f8fbfd" stroke="#d4dfe8"/>${asia?asiaMap:japan}<g aria-label="問題の地点"><circle class="map-dot" cx="${x}" cy="${y}" r="11"/><text x="${+x-5}" y="${+y+5}" fill="#fff" font-size="17" font-weight="800">★</text></g><text x="620" y="412" class="map-label">北 ↑</text></svg><div class="mini">列島の形と地方の位置関係を見て、★の場所を答えよう</div></div>`}
   function home(){const log=getLogs()[day()];$('home').style.display='block';$('quiz').style.display='none';$('result').style.display='none';$('home').innerHTML=`<div class="daily-card"><span>📖 ${log?`今日は <b>${log.correct} / ${log.total}</b> 問正解（${log.sets}セット）`:'今日の記録はまだありません。最初の10問を始めよう。'}</span><span class="mini">全${bank.length}問以上</span></div><p class="home-intro">朝の5〜10分で、歴史の流れを毎日ひとつずつ強くする演習です。四択だけでなく、漢字で答える穴埋め・年表・白地図を混ぜて出題します。</p><div class="setting-title">難易度を選ぶ</div><div class="difficulty"><button class="level ${setting.level===1?'selected':''}" data-level="1">基本</button><button class="level ${setting.level===2?'selected':''}" data-level="2">標準・受験</button><button class="level ${setting.level===3?'selected':''}" data-level="3">難関・記述多め</button></div><div class="modes" style="margin-top:22px"><button class="mode" id="newAll"><strong>朝の総合ランダム 10問</strong><span>全時代・全形式から、その日の10問。</span></button><button class="mode" id="newEra"><strong>時代別・重要問題 10問</strong><span>時代を選び、頻出テーマを集中演習。</span></button></div><div class="era-select" id="newEraSelect" hidden><h2>出題する時代を選択</h2><div class="era-buttons" id="newEraButtons"></div></div>`;document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{setting.level=+b.dataset.level;home()});$('newAll').onclick=()=>start('all');$('newEra').onclick=()=>{$('newEraSelect').hidden=!$('newEraSelect').hidden};Object.keys(groups).forEach(e=>{const b=document.createElement('button');b.className='era';b.textContent=e;b.onclick=()=>start('era',e);$('newEraButtons').append(b)});}
   function start(mode,era=null){setting.mode=mode;setting.era=era;let pool=bank.filter(q=>q.level<=setting.level&&(mode==='all'||groups[era].includes(q.era)));if(pool.length<10)pool=bank.filter(q=>mode==='all'||groups[era].includes(q.era));active=shuffle(pool).slice(0,10);index=0;score=0;miss=[];$('home').style.display='none';$('result').style.display='none';$('quiz').style.display='block';$('modeLabel').textContent=mode==='all'?`総合・${['基本','受験','難関'][setting.level-1]}`:era;render();}
   function render(){const q=active[index];$('counter').textContent=`第 ${index+1} 問 / 10`;$('bar').style.width=`${index*10}%`;$('qEra').innerHTML=`${q.era}<span class="question-kind">${q.kind}</span>`;$('qText').textContent=q.text;$('feedback').className='feedback';$('next').className='next';$('choices').innerHTML=mapSVG(q);if(q.type==='choice'){const box=document.createElement('div');box.className='choices';shuffle(q.options).forEach(a=>{const b=document.createElement('button');b.className='choice';b.textContent=a;b.onclick=()=>judge(a,b);box.append(b)});$('choices').append(box)}else{$('choices').insertAdjacentHTML('beforeend','<div class="answer-box"><input id="answerInput" class="answer-input" placeholder="答えを入力"><button id="submitAnswer" class="submit-answer">答える</button></div>');const input=$('answerInput');$('submitAnswer').onclick=()=>judge(input.value);setTimeout(()=>input.focus(),40)}}
