@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>国語・受験対策クイズ</title>
+  <style>
+    :root{--ink:#24324b;--navy:#183a63;--gold:#cf8b25;--paper:#fffdf8;--line:#e5dfd4;--muted:#687488;--ok:#247b61;--ng:#b9464c}*{box-sizing:border-box}body{margin:0;background:#f4f0e8;color:var(--ink);font-family:"Hiragino Sans","Yu Gothic",system-ui,sans-serif}header{background:linear-gradient(120deg,#142e51,#24578a);color:#fff;padding:30px 0 27px}.wrap{width:min(900px,calc(100% - 32px));margin:auto}.eyebrow{font-size:.76rem;font-weight:800;letter-spacing:.09em;color:#f8d78e}h1{margin:7px 0;font-size:clamp(1.75rem,5vw,2.5rem)}.subtitle{margin:0;color:#dfeaf5;line-height:1.7}.panel{margin:24px auto;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,4vw,34px);box-shadow:0 11px 28px #6d614c12}.daily{display:flex;justify-content:space-between;gap:12px;padding:13px 15px;border-radius:12px;background:#edf4fa;color:#294b70;font-size:.92rem}.daily b{font-size:1.05rem}.intro{line-height:1.8;color:#4d5d74}.setting{font-weight:800;margin:23px 0 10px}.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mode,.choice,.action{font:inherit;border:1px solid #d2dce7;background:#fff;color:var(--ink);cursor:pointer}.mode{padding:18px 15px;border-radius:13px;text-align:left;min-height:116px}.mode strong,.mode span{display:block}.mode strong{font-size:1.04rem;margin-bottom:7px}.mode span{color:var(--muted);font-size:.88rem;line-height:1.55}.mode:hover{border-color:#2372bf;background:#f5f9fd}.quiz-head{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);font-weight:800}.tag{background:#fff1cf;color:#8a621d;border-radius:99px;padding:7px 11px;font-size:.85rem}.bar{height:8px;background:#e7e2d9;border-radius:99px;margin:22px 0 27px;overflow:hidden}.bar span{display:block;height:100%;background:var(--gold);transition:.2s}.kind{font-size:.87rem;color:#8a621d;font-weight:800}.question{font-size:clamp(1.2rem,4.7vw,1.65rem);line-height:1.6;font-weight:800;margin:9px 0 22px;white-space:pre-line}.choices{display:grid;gap:10px}.choice{border-radius:11px;padding:15px;text-align:left;font-size:1.05rem;line-height:1.5}.choice:hover:not(:disabled){background:#f3f8fc;border-color:#7e9fc2}.choice:disabled{cursor:default}.choice.correct{background:#e4f4eb;border-color:var(--ok);color:#145943}.choice.wrong{background:#fbe8e8;border-color:var(--ng);color:#8f3036}.feedback{display:none;margin-top:18px;padding:15px;background:#f8f5ed;border-radius:11px;line-height:1.75}.feedback.show{display:block}.feedback b{display:block;margin-bottom:4px}.next{display:none;margin:18px 0 0 auto;background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px 18px;font-weight:800;font:inherit}.next.show{display:block}.score{font-size:clamp(3rem,11vw,5.3rem);font-weight:900;color:var(--gold);text-align:center;margin:18px 0 8px}.result{text-align:center;line-height:1.8;color:var(--muted)}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}.action{border-radius:10px;padding:11px 16px;font-weight:800}.action.primary{background:var(--navy);color:#fff;border-color:var(--navy)}.mini{font-size:.84rem;color:var(--muted)}@media(max-width:620px){header{padding:25px 0 22px}.panel{padding:20px 17px}.modes{grid-template-columns:1fr}.mode{min-height:0}.daily{display:block}.daily span:last-child{display:block;margin-top:5px}}
+  </style>
+</head>
+<body>
+  <header><div class="wrap"><div class="eyebrow">JAPANESE · IDIOMS &amp; PROVERBS</div><h1>国語・受験対策クイズ</h1><p class="subtitle">四字熟語・ことわざを、意味と表現の両方から身につけよう。</p></div></header>
+  <main class="wrap"><section class="panel" id="home"></section><section class="panel" id="quiz" hidden><div class="quiz-head"><span id="counter"></span><span class="tag" id="modeLabel"></span></div><div class="bar"><span id="bar"></span></div><div class="kind" id="kind"></div><div class="question" id="question"></div><div id="choices"></div><div class="feedback" id="feedback"></div><button class="next" id="next"></button></section><section class="panel" id="result" hidden><h2>今日の結果</h2><div class="score" id="score"></div><p class="result" id="resultText"></p><div class="actions"><button class="action primary" id="retry">もう一度</button><button class="action" id="back">モードを選び直す</button></div></section></main>
+  <script>
+  (()=>{
+    const $=id=>document.getElementById(id),shuffle=a=>[...a].sort(()=>Math.random()-.5),day=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo'}).format(new Date());
+    const data=`四字熟語|一期一会|一生に一度だけの出会いだと思って大切にすること
+四字熟語|一石二鳥|一つの行いで二つの利益を得ること
+四字熟語|一進一退|進んだり後退したりして、なかなか進展しないこと
+四字熟語|一心不乱|一つのことに心を集中して、ほかのことを考えないこと
+四字熟語|一朝一夕|ほんの短い間。すぐにはできないこと
+四字熟語|異口同音|多くの人が口をそろえて同じことを言うこと
+四字熟語|以心伝心|言葉にしなくても、心が互いに通じ合うこと
+四字熟語|温故知新|昔のことを学んで、そこから新しい知識や道理を得ること
+四字熟語|温厚篤実|性格が穏やかで、人情が厚く誠実なこと
+四字熟語|起承転結|文章や話の組み立ての基本となる順序
+四字熟語|喜怒哀楽|喜び・怒り・悲しみ・楽しみという人の感情
+四字熟語|危機一髪|ほんの少しの差で大変な危険を免れること
+四字熟語|臥薪嘗胆|目的を果たすため、苦労に耐えて努力を重ねること
+四字熟語|我田引水|自分に都合がよいように、物事を進めたり説明したりすること
+四字熟語|画竜点睛|最後に大切な仕上げをして、全体を完成させること
+四字熟語|言行一致|言うことと行うことが一致していること
+四字熟語|公明正大|公正で、隠し立てがなく正しいこと
+四字熟語|試行錯誤|失敗を繰り返しながら、方法を工夫して解決を目指すこと
+四字熟語|自業自得|自分の行いの結果を、自分が受けること
+四字熟語|四面楚歌|周りがすべて敵や反対者で、孤立していること
+四字熟語|十人十色|人それぞれ好みや考え方が異なること
+四字熟語|自由自在|思いどおりに、自由に使ったり行ったりできること
+四字熟語|諸行無常|この世のすべてのものは、常に変化し続けるということ
+四字熟語|森羅万象|宇宙や自然界に存在する、あらゆるものや現象
+四字熟語|支離滅裂|話や考えがばらばらで、筋道が通っていないこと
+四字熟語|新進気鋭|新しく現れ、意気込みと才能にあふれていること
+四字熟語|晴耕雨読|晴れの日は畑を耕し、雨の日は読書するような穏やかな暮らし
+四字熟語|青天白日|心にやましいことがなく、潔白であること
+四字熟語|切磋琢磨|仲間と励まし合い、競い合って自分を磨くこと
+四字熟語|千載一遇|千年に一度ほどの、めったにないよい機会
+四字熟語|大器晩成|大きな才能をもつ人は、完成するまでに時間がかかること
+四字熟語|大同小異|細かい違いはあっても、大体は同じであること
+四字熟語|電光石火|非常に素早いこと
+四字熟語|東奔西走|あちこちを忙しく走り回ること
+四字熟語|内憂外患|国内の心配事と、国外から受ける心配事
+四字熟語|二束三文|値段が非常に安いこと
+四字熟語|馬耳東風|人の意見や批判を聞き流して、少しも気にしないこと
+四字熟語|半信半疑|本当だと思う気持ちと、疑う気持ちが半分ずつであること
+四字熟語|百発百中|予想やねらいが、すべて当たること
+四字熟語|表裏一体|二つのものが、切り離せない関係にあること
+四字熟語|品行方正|行いや心が正しく、きちんとしていること
+四字熟語|不言実行|口で言う前に、黙って行動で示すこと
+四字熟語|風光明媚|自然の景色が清らかで美しいこと
+四字熟語|付和雷同|自分の考えをもたず、むやみに他人の意見に同調すること
+四字熟語|本末転倒|大切なことと、そうでないことを取り違えること
+四字熟語|明鏡止水|曇りのない鏡や静かな水のように、澄み切った心
+四字熟語|有名無実|名目だけで、実際の内容や価値が伴わないこと
+四字熟語|優柔不断|ぐずぐずしていて、なかなか決断できないこと
+四字熟語|理路整然|話や考えの筋道が、きちんと整っていること
+四字熟語|老若男女|老人・若者・男性・女性など、すべての人々
+四字熟語|前代未聞|今までに一度も聞いたことがないほど、珍しいこと
+ことわざ|石の上にも三年|冷たい石でも三年座り続ければ温まるように、辛抱強く続けることが大切だということ
+ことわざ|急がば回れ|急ぐときほど、安全で確実な方法を選んだ方がよいということ
+ことわざ|犬も歩けば棒に当たる|何かをしようと行動すれば、思いがけない出来事に出会うこと
+ことわざ|井の中の蛙大海を知らず|狭い世界だけにいて、広い世界を知らないこと
+ことわざ|馬の耳に念仏|意見や忠告をしても、少しも聞く気がないこと
+ことわざ|覆水盆に返らず|一度してしまったことは、元どおりにできないこと
+ことわざ|嘘から出たまこと|冗談や嘘だったことが、結果として本当になること
+ことわざ|売り言葉に買い言葉|相手の乱暴な言葉に対して、こちらも乱暴な言葉で返すこと
+ことわざ|蛙の子は蛙|子どもは親に似るものだということ
+ことわざ|河童の川流れ|その道の名人でも、ときには失敗すること
+ことわざ|聞くは一時の恥聞かぬは一生の恥|知らないことは、恥ずかしがらずに聞く方がよいということ
+ことわざ|郷に入っては郷に従え|その土地に入ったら、そこの習慣や決まりに従うべきだということ
+ことわざ|転ばぬ先の杖|失敗しないように、前もって十分に準備すること
+ことわざ|口は災いの元|軽はずみな発言が、思わぬ災難を招くこと
+ことわざ|猿も木から落ちる|得意なことをする人でも、ときには失敗すること
+ことわざ|三人寄れば文殊の知恵|普通の人でも、三人で相談すればよい知恵が出ること
+ことわざ|失敗は成功のもと|失敗の原因を生かせば、次の成功につながるということ
+ことわざ|釈迦に説法|その道をよく知っている人に、そのことを教えようとする愚かさ
+ことわざ|朱に交われば赤くなる|人は付き合う相手や環境によって、よくも悪くも変わること
+ことわざ|塵も積もれば山となる|小さなことでも積み重なれば、大きなものになること
+ことわざ|情けは人のためならず|人に親切にすれば、巡り巡って自分にもよいことがあるということ
+ことわざ|習うより慣れよ|人から教わるだけでなく、実際に繰り返して身につけることが大切だということ
+ことわざ|二兎を追う者は一兎をも得ず|二つのことを同時に得ようとすると、どちらも失うこと
+ことわざ|能ある鷹は爪を隠す|本当に能力のある人は、むやみにそれを見せびらかさないこと
+ことわざ|花より団子|見た目の美しさより、実際に役立つものを選ぶこと
+ことわざ|火のない所に煙は立たぬ|うわさが立つのには、何かしらの原因があること
+ことわざ|百聞は一見に如かず|何度も聞くより、一度実際に見る方がよく分かること
+ことわざ|仏の顔も三度|どんなに温厚な人でも、何度も無礼をされれば怒ること
+ことわざ|負けるが勝ち|争って勝つより、あえて譲る方が結果的によいことがあること
+ことわざ|身から出たさび|自分の行いが原因で、自分が苦しむこと
+ことわざ|目は口ほどに物を言う|目つきや表情は、口で言うのと同じくらい気持ちを表すこと
+ことわざ|目から鱗が落ちる|あることがきっかけで、急に真実や物事の本質が分かること
+ことわざ|桃栗三年柿八年|何事も成果が出るまでには、それぞれ相応の時間がかかること
+ことわざ|焼け石に水|努力や援助が少なすぎて、ほとんど効果がないこと
+ことわざ|弱り目に祟り目|困っているときに、さらに悪いことが重なること
+ことわざ|油断大敵|油断すると大きな失敗や災難につながるということ
+ことわざ|良薬は口に苦し|自分のためになる忠告は、聞くときにはつらいことが多いということ
+ことわざ|瑠璃も玻璃も照らせば光る|すぐれた才能は、どこにいても自然に目立つこと
+ことわざ|類は友を呼ぶ|気の合う者や似た者どうしは、自然に集まること
+ことわざ|渡る世間に鬼はない|世の中には、親切で思いやりのある人も多いということ
+ことわざ|笑う門には福来る|明るく笑って暮らす家には、自然に幸福が訪れること
+ことわざ|早起きは三文の得|早起きをすると、何かしらよいことがあるということ
+ことわざ|縁の下の力持ち|人に知られない所で、他人を支えること。また、その人
+ことわざ|出る杭は打たれる|才能や行動が目立つ人は、周りからねたまれたり抑えられたりしやすいこと
+ことわざ|棚からぼたもち|思いがけない幸運が、向こうからやって来ること
+ことわざ|猫に小判|価値の分からない人に、貴重なものを与えても役に立たないこと
+ことわざ|虎穴に入らずんば虎子を得ず|大きな成果を得るには、危険を恐れず挑戦する必要があること
+ことわざ|立つ鳥跡を濁さず|その場を去るときは、後始末をきちんとして美しく去るべきだということ
+ことわざ|蓼食う虫も好き好き|人の好みはさまざまで、変わった好みをもつ人もいるということ
+ことわざ|取り越し苦労|まだ起きていない先のことを、あれこれ心配すること`.trim().split('\n').map(line=>{const [type,phrase,meaning]=line.split('|');return{type,phrase,meaning}});
+    const make=(filter)=>shuffle(data.filter(x=>filter==='all'||x.type===filter)).flatMap(x=>{const peers=data.filter(y=>y.type===x.type&&y.phrase!==x.phrase);const pick=arr=>shuffle(arr).slice(0,3);return[{...x,direction:'meaning',text:`次の意味に当てはまる${x.type}はどれですか。\n${x.meaning}`,answer:x.phrase,options:shuffle([x.phrase,...pick(peers.map(y=>y.phrase))])},{...x,direction:'phrase',text:`「${x.phrase}」の意味として最も適切なものはどれですか。`,answer:x.meaning,options:shuffle([x.meaning,...pick(peers.map(y=>y.meaning))])}]});
+    let active=[],index=0,score=0,mode='all';
+    function home(){const log=JSON.parse(localStorage.getItem('japanese-idiom-log')||'{}')[day()];$('home').hidden=false;$('quiz').hidden=true;$('result').hidden=true;$('home').innerHTML=`<div class="daily"><span>📘 ${log?`今日は <b>${log.correct} / ${log.total}</b> 問正解`:'今日の記録はまだありません'}</span><span>四字熟語50・ことわざ50／計200問</span></div><p class="intro">意味から表現を選ぶ問題と、表現から意味を選ぶ問題を半分ずつ出題します。すべて中学入試でよく問われる語句です。</p><div class="setting">出題する範囲を選ぶ</div><div class="modes"><button class="mode" data-mode="all"><strong>朝の国語ランダム 10問</strong><span>四字熟語・ことわざをバランスよく。</span></button><button class="mode" data-mode="四字熟語"><strong>四字熟語 10問</strong><span>意味と表現を往復して覚える。</span></button><button class="mode" data-mode="ことわざ"><strong>ことわざ 10問</strong><span>教訓・たとえ・使い方を確認。</span></button></div>`;document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>start(b.dataset.mode));}
+    function start(m){mode=m;active=shuffle(make(m)).slice(0,10);index=0;score=0;$('home').hidden=true;$('quiz').hidden=false;$('result').hidden=true;render()}
+    function render(){const q=active[index];$('counter').textContent=`第 ${index+1} 問 / 10`;$('modeLabel').textContent=mode==='all'?'四字熟語・ことわざ':mode;$('bar').style.width=`${index*10}%`;$('kind').textContent=`${q.type}・${q.direction==='meaning'?'意味 → 表現':'表現 → 意味'}`;$('question').textContent=q.text;$('feedback').className='feedback';$('next').className='next';$('choices').innerHTML='';q.options.forEach(a=>{const b=document.createElement('button');b.className='choice';b.textContent=a;b.onclick=()=>judge(a,b);$('choices').append(b)})}
+    function judge(value,button){if($('next').classList.contains('show'))return;const q=active[index],ok=value===q.answer;document.querySelectorAll('.choice').forEach(b=>{b.disabled=true;if(b.textContent===q.answer)b.classList.add('correct')});if(!ok)button.classList.add('wrong');if(ok)score++;$('feedback').innerHTML=ok?`<b>正解！</b>「${q.phrase}」：${q.meaning}`:`<b>おしい！ 正解は「${q.answer}」</b>「${q.phrase}」：${q.meaning}`;$('feedback').classList.add('show');$('next').textContent=index===9?'今日の結果を見る':'次の問題へ';$('next').classList.add('show')}
+    function finish(){const logs=JSON.parse(localStorage.getItem('japanese-idiom-log')||'{}'),d=day(),old=logs[d]||{correct:0,total:0};old.correct+=score;old.total+=10;logs[d]=old;localStorage.setItem('japanese-idiom-log',JSON.stringify(logs));$('quiz').hidden=true;$('result').hidden=false;$('score').textContent=`${score} / 10`;$('resultText').textContent=score>=9?'とても良い仕上がりです。意味まで自分の言葉で説明できるか挑戦しよう。':score>=7?'よくできました。間違えた語句は解説を声に出して読み直そう。':'解説を確認して、表現と意味をセットで覚えよう。'}
+    $('next').onclick=()=>{index++;index<10?render():finish()};$('retry').onclick=()=>start(mode);$('back').onclick=home;home();
+  })();
+  </script>
+</body>
+</html>
