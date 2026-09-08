@@ -103,6 +103,6 @@
     function showResult(){$('quiz').style.display='none';$('result').style.display='block';$('score').textContent=`${score} / 10`;let msg=score>=9?'すばらしい！ 資料や流れを問う問題にも挑戦してみましょう。':score>=7?'よくできました。解説を読み返して、出来事どうしのつながりも押さえましょう。':score>=5?'基礎は育っています。間違えた問題の時代背景を解説で確認しましょう。':'まずは解説を味方に。人物・制度・できごとの「なぜ」を意識して復習しましょう。';$('resultText').textContent=msg;}
     $('retry').onclick=()=>start(config.type,config.era);$('back').onclick=()=>{$('result').style.display='none';$('quiz').style.display='none';$('home').style.display='block'};
   </script>
-  <script src="app.js?v=geo-20260908"></script>
+  <script src="app.js?v=map-quality-20260908"></script>
 </body>
 </html>
